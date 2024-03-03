@@ -1,0 +1,10 @@
+package com.zxw.reggie.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zxw.reggie.entity.Setmeal;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface SetmeaMapper extends BaseMapper<Setmeal> {
+
+}
