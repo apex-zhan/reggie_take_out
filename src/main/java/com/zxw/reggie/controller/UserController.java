@@ -8,7 +8,8 @@ import com.zxw.reggie.utils.SMSUtils;
 import com.zxw.reggie.utils.ValidateCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.server.Session;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,18 @@ public class UserController {
     private UserService userService;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private CacheManager cacheManager;
+
+    /**
+     * CachePut  将方法返回放入缓存
+     * value 缓存名称，每个下可以放多个key
+     * key 缓存的key
+     * @param user
+     * @param session
+     * @return
+     */
+//    @CachePut(value = "userCache",key = "#result.id")
 
     @PostMapping("/sendMsg")
     public R<String> sendMsg(@RequestBody User user, HttpSession session) {

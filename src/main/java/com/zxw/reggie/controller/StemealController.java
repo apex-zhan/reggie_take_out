@@ -12,6 +12,8 @@ import com.zxw.reggie.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +38,8 @@ public class StemealController {
      * @return
      */
     @PostMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
+//    指定缓存名称（value属性）和是否清除所有条目（allEntries属性）。如果allEntries为true，则清除所有条目，否则只清除指定方法（通过@Cacheable注解）的缓存。
     public R<String> save(@RequestBody SetmealDto setmealDto) {
         log.info("套餐信息：{}", setmealDto);
         //使用setmealDto对象保存数据到setmealService中。具体实现可能包括检查setmealDto是否有效，创建或更新相应的记录，并返回相应的结果。
@@ -100,6 +104,8 @@ public class StemealController {
      * @return
      */
     @DeleteMapping
+    @CacheEvict(value = "setmealCache", allEntries = true)
+//    指定缓存名称（value属性）和是否清除所有条目（allEntries属性）。如果allEntries为true，则清除所有条目，否则只清除指定方法（通过@Cacheable注解）的缓存。
     public R<String> delete(@RequestParam List<Long> ids) {
         log.info("ids:{}", ids);
         setmealService.removeWithDish(ids);
@@ -112,6 +118,8 @@ public class StemealController {
      * @return
      */
     @GetMapping("/list")
+//    缓存一个名为setmeal的对象，缓存值的名称是setmealCache，缓存的键是setmeal.categoryId+'_'+setmeal.status的拼接结果。
+    @Cacheable(value = "setmealCache",key = "#setmeal.categoryId+'_'+#setmeal.status")
     public R<List<Setmeal>> list( Setmeal setmeal) {
         LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());
