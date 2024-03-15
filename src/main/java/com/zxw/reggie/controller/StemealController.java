@@ -9,6 +9,10 @@ import com.zxw.reggie.entity.Setmeal;
 import com.zxw.reggie.service.CategoryService;
 import com.zxw.reggie.service.SetmealDishService;
 import com.zxw.reggie.service.SetmealService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/setmeal")
 @Slf4j
+@Api(tags = "套餐管理相关接口 ")
 public class StemealController {
     @Autowired
     private SetmealService setmealService;
@@ -38,7 +43,8 @@ public class StemealController {
      * @return
      */
     @PostMapping
-    @CacheEvict(value = "setmealCache", allEntries = true)
+    @CacheEvict(value = "setmealCache", allEntries = true)//用于在方法执行后清除缓存
+    @ApiOperation(value = "新增套餐接口")
 //    指定缓存名称（value属性）和是否清除所有条目（allEntries属性）。如果allEntries为true，则清除所有条目，否则只清除指定方法（通过@Cacheable注解）的缓存。
     public R<String> save(@RequestBody SetmealDto setmealDto) {
         log.info("套餐信息：{}", setmealDto);
@@ -56,6 +62,11 @@ public class StemealController {
      * @return
      */
     @GetMapping("/page")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "页码", required = true),
+            @ApiImplicitParam(name = "pageSize", value = "每页记录数", required = true),
+            @ApiImplicitParam(name = "name", value = "套餐名称", required = false)
+    })
     public R<Page> page(int page, int pageSize, String name) {
         //分页构造器
         Page<Setmeal> pageInfo = new Page<>(page, pageSize);
@@ -105,6 +116,7 @@ public class StemealController {
      */
     @DeleteMapping
     @CacheEvict(value = "setmealCache", allEntries = true)
+    @ApiOperation(value = "删除套餐")
 //    指定缓存名称（value属性）和是否清除所有条目（allEntries属性）。如果allEntries为true，则清除所有条目，否则只清除指定方法（通过@Cacheable注解）的缓存。
     public R<String> delete(@RequestParam List<Long> ids) {
         log.info("ids:{}", ids);
@@ -118,6 +130,7 @@ public class StemealController {
      * @return
      */
     @GetMapping("/list")
+    @ApiOperation(value = "根据条件查询套餐数据")
 //    缓存一个名为setmeal的对象，缓存值的名称是setmealCache，缓存的键是setmeal.categoryId+'_'+setmeal.status的拼接结果。
     @Cacheable(value = "setmealCache",key = "#setmeal.categoryId+'_'+#setmeal.status")
     public R<List<Setmeal>> list( Setmeal setmeal) {
